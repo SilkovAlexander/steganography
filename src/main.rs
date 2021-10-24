@@ -1,8 +1,11 @@
+mod encode;
+
 extern crate clap;
 use clap::{Arg, App, SubCommand, AppSettings, ArgMatches};
+use crate::encode::encode_data;
 
 fn parse_arguments(matches: &ArgMatches, check_data_exists: bool) -> Result<(String, String), String> {
-    // here we can unwrap without check, because options were marked as required.
+    // Here we can unwrap without check, because options were marked as required.
     let img_path = matches.value_of("IMAGE").unwrap().to_string();
     let data_path = matches.value_of("DATA").unwrap().to_string();
     if !std::path::Path::new(&img_path).exists() {
@@ -68,14 +71,8 @@ fn main_internal() -> Result<(), String> {
     Ok(())
 }
 
-fn encode_data(_img_path: String, _data_path: String) -> Result<(), String> {
-
-    Ok(())
-}
-
 
 fn decode_data(_img_path: String, _data_path: String) -> Result<(), String> {
-
 
     Ok(())
 }
