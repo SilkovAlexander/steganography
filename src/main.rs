@@ -1,70 +1,81 @@
-extern crate image;
+extern crate clap;
+use clap::{Arg, App, SubCommand, AppSettings, ArgMatches};
 
-use image::GenericImageView;
-
-fn main() {
-    // Use the open function to load an image from a Path.
-    // `open` returns a `DynamicImage` on success.
-
-    let path = "resources/image.png";
-    let img = image::open(path);
-    if img.is_err() {
-        println!("Failed to open the image {}: {}", path, img.err().unwrap());
-        return;
+fn parse_arguments(matches: &ArgMatches, check_data_exists: bool) -> Result<(String, String), String> {
+    // here we can unwrap without check, because options were marked as required.
+    let img_path = matches.value_of("IMAGE").unwrap().to_string();
+    let data_path = matches.value_of("DATA").unwrap().to_string();
+    if !std::path::Path::new(&img_path).exists() {
+        return Err("Image file was not found.".to_string());
     }
-    let img = img.unwrap();
-    // The dimensions method returns the images width and height.
-    println!("dimensions {:?}", img.dimensions());
-
-    // The color method returns the image's `ColorType`.
-    println!("{:?}", img.color());
-
-    // Write the contents of this image to the Writer in PNG format.
-    img.save("test.png").unwrap();
+    if check_data_exists && !std::path::Path::new(&data_path).exists() {
+        return Err("Data file was not found.".to_string());
+    }
+    Ok((img_path, data_path))
 }
 
-// //! An example of generating julia fractals.
-// extern crate image;
-// extern crate num_complex;
-//
-// fn main() {
-//     let imgx = 1200;
-//     let imgy = 1200;
-//
-//     let scalex = 3.0 / imgx as f32;
-//     let scaley = 3.0 / imgy as f32;
-//
-//     // Create a new ImgBuf with width: imgx and height: imgy
-//     let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
-//
-//     // Iterate over the coordinates and pixels of the image
-//     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-//         let r = (0.3 * x as f32) as u8;
-//         let b = (0.3 * y as f32) as u8;
-//         *pixel = image::Rgb([r, 0, b]);
-//     }
-//
-//     // A redundant loop to demonstrate reading image data
-//     for x in 0..imgx {
-//         for y in 0..imgy {
-//             let cx = y as f32 * scalex - 1.5;
-//             let cy = x as f32 * scaley - 1.5;
-//
-//             let c = num_complex::Complex::new(-0.4, 0.6);
-//             let mut z = num_complex::Complex::new(cx, cy);
-//
-//             let mut i = 0;
-//             while i < 255 && z.norm() <= 2.0 {
-//                 z = z * z + c;
-//                 i += 1;
-//             }
-//
-//             let pixel = imgbuf.get_pixel_mut(x, y);
-//             let image::Rgb(data) = *pixel;
-//             *pixel = image::Rgb([data[0], i as u8, data[2]]);
-//         }
-//     }
-//
-//     // Save the image as “fractal.png”, the format is deduced from the path
-//     imgbuf.save("fractal.png").unwrap();
-// }
+fn on_error<T>(error: T)
+where
+    T: std::fmt::Display
+{
+    println!("Error: {}", error);
+    std::process::exit(1);
+}
+
+fn main() {
+    let _ = main_internal()
+        .map_err(|e| on_error(e));
+}
+
+fn main_internal() -> Result<(), String> {
+    let matches = App::new("tonos_cli")
+        .version(&*format!("{}", env!("CARGO_PKG_VERSION")))
+        .author("SilkovAlexander")
+        .about("Command line tool for image steganography")
+        .subcommand(SubCommand::with_name("encode")
+            .about("Command to encode data into the image.")
+            .arg(Arg::with_name("IMAGE")
+                .help("Path to the file with container image.")
+                .required(true)
+                .takes_value(true))
+            .arg(Arg::with_name("DATA")
+                .help("Path to the file with data, that should be encoded.")
+                .required(true)
+                .takes_value(true)))
+        .subcommand(SubCommand::with_name("decode")
+            .about("Command to decode data from the image.")
+            .arg(Arg::with_name("IMAGE")
+                .help("Path to the file with container image.")
+                .required(true)
+                .takes_value(true))
+            .arg(Arg::with_name("DATA")
+                .help("Path to the file, where to store the decoded data.")
+                .required(true)
+                .takes_value(true)))
+        .setting(AppSettings::SubcommandRequired)
+        .get_matches();
+
+    if let Some(matches) = matches.subcommand_matches("decode") {
+        let (img_path, data_path) = parse_arguments(matches, false)?;
+        decode_data(img_path, data_path)?;
+    }
+
+    if let Some(matches) = matches.subcommand_matches("encode") {
+        let (img_path, data_path) = parse_arguments(matches, true)?;
+        encode_data(img_path, data_path)?;
+    }
+    println!("The program has finished successfully.");
+    Ok(())
+}
+
+fn encode_data(_img_path: String, _data_path: String) -> Result<(), String> {
+
+    Ok(())
+}
+
+
+fn decode_data(_img_path: String, _data_path: String) -> Result<(), String> {
+
+
+    Ok(())
+}
