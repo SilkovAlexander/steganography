@@ -1,4 +1,5 @@
 mod encode;
+mod constants;
 
 extern crate clap;
 use clap::{Arg, App, SubCommand, AppSettings, ArgMatches};
@@ -65,7 +66,7 @@ fn main_internal() -> Result<(), String> {
 
     if let Some(matches) = matches.subcommand_matches("encode") {
         let (img_path, data_path) = parse_arguments(matches, true)?;
-        encode_data(img_path, data_path)?;
+        encode_data(img_path, data_path, None)?;
     }
     println!("The program has finished successfully.");
     Ok(())
