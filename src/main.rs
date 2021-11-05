@@ -1,9 +1,12 @@
 mod encode;
 mod constants;
+mod helpers;
+mod decode;
 
 extern crate clap;
 use clap::{Arg, App, SubCommand, AppSettings, ArgMatches};
 use crate::encode::encode_data;
+use crate::decode::decode_data;
 
 fn parse_arguments(matches: &ArgMatches, check_data_exists: bool) -> Result<(String, String), String> {
     // Here we can unwrap without check, because options were marked as required.
@@ -68,12 +71,7 @@ fn main_internal() -> Result<(), String> {
         let (img_path, data_path) = parse_arguments(matches, true)?;
         encode_data(img_path, data_path, None)?;
     }
-    println!("The program has finished successfully.");
+    println!("The program succeeded.");
     Ok(())
 }
 
-
-fn decode_data(_img_path: String, _data_path: String) -> Result<(), String> {
-
-    Ok(())
-}
