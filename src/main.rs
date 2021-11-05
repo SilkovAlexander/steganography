@@ -48,6 +48,10 @@ fn main_internal() -> Result<(), String> {
             .arg(Arg::with_name("DATA")
                 .help("Path to the file with data, that should be encoded.")
                 .required(true)
+                .takes_value(true))
+            .arg(Arg::with_name("OUTPUT")
+                .help("Path to the file where to store the encoded result.")
+                .required(true)
                 .takes_value(true)))
         .subcommand(SubCommand::with_name("decode")
             .about("Command to decode data from the image.")
@@ -69,7 +73,10 @@ fn main_internal() -> Result<(), String> {
 
     if let Some(matches) = matches.subcommand_matches("encode") {
         let (img_path, data_path) = parse_arguments(matches, true)?;
-        encode_data(img_path, data_path, None)?;
+        let output = matches.value_of("OUTPUT")
+            .map(|v| v.to_string())
+            .unwrap();
+        encode_data(img_path, data_path, output)?;
     }
     println!("The program succeeded.");
     Ok(())

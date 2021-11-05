@@ -16,6 +16,7 @@ fn test_enc_dec() -> Result<(), Box<dyn std::error::Error>> {
     cmd.arg("encode")
         .arg(IMAGE_PATH)
         .arg(DATA_PATH)
+        .arg(ENCODED_PATH)
         .assert()
         .success()
         .stdout(predicate::str::contains("The program succeeded."));

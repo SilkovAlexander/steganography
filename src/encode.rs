@@ -8,7 +8,7 @@ use crate::helpers::{
 };
 use crate::constants::NUMBER_OF_COLORS;
 
-pub fn encode_data(img_path: String, data_path: String, _output_path: Option<String>) -> Result<(), String> {
+pub fn encode_data(img_path: String, data_path: String, output_path: String) -> Result<(), String> {
     let data_bytes = fs::read(&data_path)
         .map_err(|e| format!("failed to read file {}: {}", data_path, e))?;
     check_data(&data_bytes)?;
@@ -18,7 +18,9 @@ pub fn encode_data(img_path: String, data_path: String, _output_path: Option<Str
         .map_err(|e| format!("failed to open the image: {}", e))?;
 
     check_image_parameters(&image, data_bits.len())?;
-    encapsulate_data(data_bits, image)?;
+    let encoded_image = encapsulate_data(data_bits, image)?;
+    encoded_image.save(output_path)
+        .map_err(|e| format!("Failed to save the result image: {}", e))?;
 
     Ok(())
 }
@@ -31,7 +33,7 @@ fn check_data(data_bytes: &Vec<u8>) -> Result<(), String> {
     Ok(())
 }
 
-fn encapsulate_data(data_bits: Vec<u8>, image: DynamicImage) -> Result<(), String> {
+fn encapsulate_data(data_bits: Vec<u8>, image: DynamicImage) -> Result<DynamicImage, String> {
     let mut iter = data_bits.iter();
     // TODO: separate rgba,rgb encoding or convert all to rgb8
     let mut n_image = image;
@@ -43,7 +45,7 @@ fn encapsulate_data(data_bits: Vec<u8>, image: DynamicImage) -> Result<(), Strin
         }
     }
     // TODO: return updated image and save it to specified path in a function
-    n_image.save("tests/resources/result.png")
-        .map_err(|e| format!("Failed to save the result image: {}", e))?;
-    Ok(())
+    // n_image.save("tests/resources/result.png")
+    //     .map_err(|e| format!("Failed to save the result image: {}", e))?;
+    Ok(n_image)
 }
