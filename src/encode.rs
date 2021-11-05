@@ -42,8 +42,8 @@ fn encapsulate_data(data_bits: Vec<u8>, image: DynamicImage) -> Result<(), Strin
             pixel.0[i] = (pixel.0[i] & 0xFE) + iter.next().unwrap_or(&0);
         }
     }
-    // TODO: return updated iamge and save it to specified path in a function
-    n_image.save("target/resources/result.png")
+    // TODO: return updated image and save it to specified path in a function
+    n_image.save("tests/resources/result.png")
         .map_err(|e| format!("Failed to save the result image: {}", e))?;
     Ok(())
 }

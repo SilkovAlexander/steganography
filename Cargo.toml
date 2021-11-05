@@ -8,3 +8,8 @@ authors = ["SilkovAlexander"]
 [dependencies]
 image = "0.23.14"
 clap = "2.33.3"
+
+[dev-dependencies]
+assert_cmd = "2.0.2"
+predicates = "2.0.3"
+file_diff = "1.0.0"

@@ -37,7 +37,7 @@ pub fn convert_bits_to_bytes(data_bits: Vec<u8>) -> Result<Vec<u8>, String> {
     let mut bit = data_bits.iter();
     for _ in 0..(data_bits.len()/BITS_IN_BYTE) {
         let mut tmp = 0;
-        for i in 0..BITS_IN_BYTE {
+        for _ in 0..BITS_IN_BYTE {
             tmp = bit.next().unwrap_or(&0) + (tmp << 1);
         }
         res.push(tmp);

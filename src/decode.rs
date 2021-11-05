@@ -2,7 +2,7 @@ extern crate image;
 
 use std::fs;
 use image::{DynamicImage};
-use crate::helpers::{check_image_parameters, check_image_color_type, load_length, convert_bits_to_bytes};
+use crate::helpers::{check_image_color_type, load_length, convert_bits_to_bytes};
 use crate::constants::NUMBER_OF_COLORS;
 
 pub fn decode_data(img_path: String, data_path: String) -> Result<(), String> {
