@@ -1,5 +1,5 @@
 use crate::constants::*;
-use image::{DynamicImage, GenericImageView};
+use image::{ColorType, DynamicImage, GenericImageView};
 use crate::constants::{LENGTH_FIELD, BITS_IN_BYTE};
 
 fn convert_length(length: u32) -> Vec<u8> {
@@ -67,19 +67,20 @@ pub fn convert_bytes_to_bits_with_length(data_bytes: Vec<u8>) -> Vec<u8> {
 
 }
 
-pub fn check_image_parameters(image: &DynamicImage, data_len: usize) -> Result<(), String> {
-    check_image_color_type(image)?;
+pub fn check_image_parameters(image: &DynamicImage, data_len: usize) -> Result<ColorType, String> {
+    let color = check_image_color_type(image)?;
     let img_size = image.dimensions();
     let img_storage_volume = (img_size.0 * img_size.1 * NUMBER_OF_COLORS as u32) as usize;
     if img_storage_volume < (data_len + LENGTH_FIELD) {
         return Err("Image buffer is not great enough to accommodate the data buffer.".to_string());
     }
-    Ok(())
+    Ok(color)
 }
 
-pub fn check_image_color_type(image: &DynamicImage) ->Result<(), String> {
-    if (image.color().channel_count() as usize) < NUMBER_OF_COLORS {
+pub fn check_image_color_type(image: &DynamicImage) ->Result<ColorType, String> {
+    let color = image.color();
+    if (color.channel_count() as usize) < NUMBER_OF_COLORS {
         return Err("Image is meant to have at least 3 color channels.".to_string());
     }
-    Ok(())
+    Ok(color)
 }

@@ -41,6 +41,7 @@ fn main_internal() -> Result<(), String> {
         .about("Command line tool for image steganography")
         .subcommand(SubCommand::with_name("encode")
             .about("Command to encode data into the image.")
+            .version(&*format!("{}", env!("CARGO_PKG_VERSION")))
             .arg(Arg::with_name("IMAGE")
                 .help("Path to the file with container image.")
                 .required(true)
@@ -55,6 +56,7 @@ fn main_internal() -> Result<(), String> {
                 .takes_value(true)))
         .subcommand(SubCommand::with_name("decode")
             .about("Command to decode data from the image.")
+            .version(&*format!("{}", env!("CARGO_PKG_VERSION")))
             .arg(Arg::with_name("IMAGE")
                 .help("Path to the file with container image.")
                 .required(true)
@@ -68,6 +70,7 @@ fn main_internal() -> Result<(), String> {
 
     if let Some(matches) = matches.subcommand_matches("decode") {
         let (img_path, data_path) = parse_arguments(matches, false)?;
+        // TODO: add decode to cmd
         decode_data(img_path, data_path)?;
     }
 
@@ -78,7 +81,7 @@ fn main_internal() -> Result<(), String> {
             .unwrap();
         encode_data(img_path, data_path, output)?;
     }
-    println!("The program succeeded.");
+    println!("Success.");
     Ok(())
 }
 

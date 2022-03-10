@@ -1,7 +1,7 @@
 extern crate image;
 
 use std::fs;
-use image::{DynamicImage};
+use image::{DynamicImage, ColorType};
 use crate::helpers::{
     convert_bytes_to_bits_with_length,
     check_image_parameters,
@@ -17,7 +17,6 @@ pub fn encode_data(img_path: String, data_path: String, output_path: String) -> 
     let image = image::open(img_path)
         .map_err(|e| format!("failed to open the image: {}", e))?;
 
-    check_image_parameters(&image, data_bits.len())?;
     let encoded_image = encapsulate_data(data_bits, image)?;
     encoded_image.save(output_path)
         .map_err(|e| format!("Failed to save the result image: {}", e))?;
@@ -34,18 +33,35 @@ fn check_data(data_bytes: &Vec<u8>) -> Result<(), String> {
 }
 
 fn encapsulate_data(data_bits: Vec<u8>, image: DynamicImage) -> Result<DynamicImage, String> {
+    let color = check_image_parameters(&image, data_bits.len())?;
     let mut iter = data_bits.iter();
-    // TODO: separate rgba,rgb encoding or convert all to rgb8
     let mut n_image = image;
-    for (_, _, pixel) in n_image.as_mut_rgba8()
-        .ok_or("Failed to decode the image.".to_string())?
-        .enumerate_pixels_mut() {
-        for i in 0..NUMBER_OF_COLORS {
-            pixel.0[i] = (pixel.0[i] & 0xFE) + iter.next().unwrap_or(&0);
-        }
-    }
-    // TODO: return updated image and save it to specified path in a function
-    // n_image.save("tests/resources/result.png")
-    //     .map_err(|e| format!("Failed to save the result image: {}", e))?;
+    // TODO: separate rgba,rgb encoding or convert all to rgb8
+    match color {
+        ColorType::Rgba8 => {
+            let pixels = n_image.as_mut_rgba8()
+                .ok_or("Failed to decode the image.".to_string())?
+                .enumerate_pixels_mut();
+            for (_, _, pixel) in pixels
+            {
+                for i in 0..NUMBER_OF_COLORS {
+                    pixel.0[i] = (pixel.0[i] & 0xFE) + iter.next().unwrap_or(&0);
+                }
+            }
+        },
+        ColorType::Rgb8 => {
+            let pixels = n_image.as_mut_rgb8()
+                .ok_or("Failed to decode the image.".to_string())?
+                .enumerate_pixels_mut();
+            for (_, _, pixel) in pixels
+            {
+                for i in 0..NUMBER_OF_COLORS {
+                    pixel.0[i] = (pixel.0[i] & 0xFE) + iter.next().unwrap_or(&0);
+                }
+            }
+        },
+        _ => return Err("Input image has wrong color type.".to_string())
+    };
+
     Ok(n_image)
 }
