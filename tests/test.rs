@@ -33,8 +33,10 @@ fn test_enc_dec() -> Result<(), Box<dyn std::error::Error>> {
             .assert()
             .success()
             .stdout(predicate::str::contains("Success."));
+
+        assert!(diff(DATA_PATH, DECODED_PATH));
+        std::fs::remove_file(ENCODED_PATH)?;
+        std::fs::remove_file(DECODED_PATH)?;
     }
-    assert!(diff(DATA_PATH, DECODED_PATH));
-    std::fs::remove_file(ENCODED_PATH)?;
     Ok(())
 }

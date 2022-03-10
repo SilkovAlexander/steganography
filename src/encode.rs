@@ -36,7 +36,6 @@ fn encapsulate_data(data_bits: Vec<u8>, image: DynamicImage) -> Result<DynamicIm
     let color = check_image_parameters(&image, data_bits.len())?;
     let mut iter = data_bits.iter();
     let mut n_image = image;
-    // TODO: separate rgba,rgb encoding or convert all to rgb8
     match color {
         ColorType::Rgba8 => {
             let pixels = n_image.as_mut_rgba8()

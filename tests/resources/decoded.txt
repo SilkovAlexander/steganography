@@ -1,2 +1,0 @@
-Hello world
-This is a sample for stegoimage tool.

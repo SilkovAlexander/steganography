@@ -70,7 +70,6 @@ fn main_internal() -> Result<(), String> {
 
     if let Some(matches) = matches.subcommand_matches("decode") {
         let (img_path, data_path) = parse_arguments(matches, false)?;
-        // TODO: add decode to cmd
         decode_data(img_path, data_path)?;
     }
 
